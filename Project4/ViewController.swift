@@ -10,7 +10,7 @@ import WebKit
 class ViewController: UIViewController{
     var webView: WKWebView!
     var progressView: UIProgressView!
-    var websites = ["levis.com", "bestbuy.com","victoriassecret.com"]
+    var websites = ["levi.com", "bestbuy.com","victoriassecret.com"]
     
     override func loadView() {
         
@@ -22,16 +22,21 @@ class ViewController: UIViewController{
         super.viewDidLoad()
     
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
-    
+        
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         
         let refresh = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
-
+        
+//        let play = UIBarButtonItem(image: UIImage(systemName: "triangle"), style: .plain, target: self, action: nil)
+        
+        let goBack = UIBarButtonItem(image:UIImage(systemName:"chevron.backward"), style:.plain, target: webView, action: #selector(webView.goBack))
+        let goForward = UIBarButtonItem(image:UIImage(systemName:"chevron.forward"), style:.plain, target: webView, action: #selector(webView.goForward))
+        
         progressView = UIProgressView(progressViewStyle: .default)
         progressView.sizeToFit()
         let progressButton = UIBarButtonItem(customView: progressView)
         
-        toolbarItems = [progressButton,spacer, refresh]
+        toolbarItems = [progressButton,spacer, goBack, spacer, goForward,spacer, refresh]
         navigationController?.isToolbarHidden = false
         
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
@@ -39,6 +44,7 @@ class ViewController: UIViewController{
         let url = URL(string:"https://" + websites[0])!
         
         webView.load(URLRequest(url: url))
+    
         webView.allowsBackForwardNavigationGestures = true
     }
     @objc func openTapped() {
@@ -77,10 +83,11 @@ class ViewController: UIViewController{
                 }
             }
         }
-
         decisionHandler(.cancel)
+        let blockedAlert = UIAlertController(title: "Blocked", message: "Visiting that website is not allowed", preferredStyle: .alert)
+        present(blockedAlert, animated:true)
+        }
     }
-}
-extension ViewController: WKNavigationDelegate {
-    
+extension ViewController: WKNavigationDelegate{
+
 }
